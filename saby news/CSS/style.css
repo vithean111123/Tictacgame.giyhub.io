@@ -1,220 +1,97 @@
-*{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-body{
-    background-color: pink;
-    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: black;
+      margin: 0;
+      padding: 0;
+      color: #fff;
+      overflow: hidden;
+    }
 
-}
-header{
-    width: 100%;
-    height: 120px;
-    background-color: black;
-}
-header .pic{
-    width: 90px;
-    height: 90px;
-    margin-left: 60px;
-    padding-top: 10px;
-}
-header .pic img{
-    width: 100%;
-    height: 100%;
-}
-nav{
-    position: sticky;
-    top: 0px;
-    width: 100%;
-    height: 55px;
-    background-color: antiquewhite;
+    h1 {
+      margin-top: 20px;
+      font-size: 32px;
+      text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
+    }
 
-}
-ul{
-    display: flex;
-    gap: 10px;
-    margin-left: 70px;
-}
-nav ul li{
-    list-style: none;
-}
-nav ul li a{
-    text-decoration: none;
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    height: 55%;
-    font-size: 18px;
-    color:blueviolet ;
-    font-weight: bold;
-    padding: 10px 5px;
-}
-main{
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    margin-top: 20px;
-}
-section{
-    width: 90%;
-    height: 500px;
-    display: flex;
-    gap:20px;
-    background-color: blue;
-}
-.left{
-    width: 75%;
-    height: 100%;
-    background-color: aqua;
-}
-.left-top{
-  width: 100%;
-  height: 50%;
-  background-color: yellow;
-}
-.left-top .box1{
-  width: 60%;
-  height: 100%;
-  background-color: aqua;
-}
-.left-top .box2{
-  width: 40%;
-  height: 100%;
-  background-color: brown;
-}
-.left-top .box .img{
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
-.image img {
-  width: 100%;
-  height: 100%;
-}
-.back{
-  width: 505px;
-  height: 250px;
-  background-color: #e66767;
-  position: absolute;
-  opacity: 0.5;
-}
-.back:hover{
-  opacity: 0.5;
-}
-.esport{
-  clip-path: polygon(0 0,80% 0,90% 27%, 0 25%);
-  width: 140px;
-  height: 160px;
-  background-color: aquamarine;
-  padding: 10px 15px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 15px;
-  top: -135px;
-  position: relative;
-}
-.title {
-  font-size: 18px;
-  color: white;
-  top: -260px;
-  position: relative;
-  left: 15px;
-  width: 450px;
-  font-weight: bold;
-  transition: all 0.6s;
-}
+    input[type="text"], select {
+      padding: 10px;
+      font-size: 16px;
+      margin: 5px;
+      border-radius: 5px;
+      width: 80%;
+      max-width: 250px;
+    }
 
-.box1:hover .title {
-  transform: translateY(-60px);
-  color: red;
-}
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #222;
+      color: white;
+    }
 
-.title-hover {
-  font-size: 15px;
-  color: #fff;
-  top: -255px;
-  position: relative;
-  left: 15px;
-  width: 450px;
-  z-index: -999;
-  transition: all 0.6s;
-}
+    #board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      max-width: 90vw;
+      margin: 20px auto;
+    }
 
-.box1:hover .title-hover {
-  transform: translateY(-55px);
-  z-index: 999;
-}
+    .cell {
+      aspect-ratio: 1;
+      font-size: 6vw;
+      cursor: pointer;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      color: black;
+    }
 
-.date {
-  color: white;
-  top: -280px;
-  position: relative;
-  left: 15px;
-  font-size: 11px;
-}
+    .blue { color: rgb(149, 149, 239); }
+    .yellow { color: orange; }
 
-.box2 img {
-  width: 100%;
-  height: 100%;
-}
+    #message {
+      margin-top: 15px;
+      font-size: 18px;
+      text-shadow: 1px 1px 3px black;
+    }
 
-.box2 .back1 {
-  width: 27%;
-  height: 45%;
-  background-color: rgba(0, 0, 0, 0.687);
-  position: absolute;
-  opacity: 0.5;
-}
+    #player-info {
+      font-size: 16px;
+      margin-top: 10px;
+    }
 
-.box2 .back1:hover {
-  opacity: 0.9;
-}
+    #setup {
+      margin-top: 20px;
+    }
 
-.box2 .title {
-  font-size: 18px;
-  color: #fff;
-  font-weight: bold;
-  position: relative;
-  top: -100px;
-  width: 300px;
-}
+    @media (min-width: 600px) {
+      .cell { font-size: 32px; }
+      h1 { font-size: 40px; }
+    }
 
-.box2:hover .title {
-  transition: all 0.6s;
-  transform: translateY(-55px);
-  color: red;
-}
+    #starCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at bottom, #0d1a26 0%, #000 100%);
+    }
 
-.box2 .title-hover {
-  top: -90px;
-  color: white;
-  z-index: -999;
-  position: relative;
-  width: 300px;
-}
-
-.box2:hover .title-hover {
-  transform: translateY(-55px);
-  z-index: 999;
-}
-
-.box2 .date {
-  top: -120px;
-  position: relative;
-  font-size: 11px;
-}
-
-.box2 .esport {
-  clip-path: polygon(0 0, 80% 0%, 100% 28%, 0 28%);
-  width: 150px;
-  height: 130px;
-  font-size: 14px;
-  padding-top: 15px;
-  background-color: pink;
-  font-weight: bold;
-  color: #fff;
-  position: relative;
-  top: -340px;
-}
+    #toggleEffects {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      background: rgba(0,0,0,0.5);
+    }
