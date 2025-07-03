@@ -2,29 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Tic Tac Toe with Player Names</title>
+  <title>Tic Tac Toe Game</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background: url('https://images.unsplash.com/photo-1557683316-973673baf926') no-repeat center center fixed;
-      background-size: cover;
+      background-color: black;
       margin: 0;
       padding: 0;
       color: #fff;
+      overflow: hidden;
     }
 
     h1 {
-      margin-top: 30px;
-      font-size: 40px;
+      margin-top: 20px;
+      font-size: 32px;
       text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.6);
     }
 
-    input[type="text"] {
-      padding: 8px;
+    input[type="text"], select {
+      padding: 10px;
       font-size: 16px;
       margin: 5px;
       border-radius: 5px;
+      width: 80%;
+      max-width: 250px;
     }
 
     button {
@@ -40,23 +42,22 @@
 
     #board {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
-      gap: 10px;
-      justify-content: center;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      max-width: 90vw;
       margin: 20px auto;
     }
 
     .cell {
-      width: 100px;
-      height: 100px;
-      font-size: 36px;
+      aspect-ratio: 1;
+      font-size: 6vw;
       cursor: pointer;
-      background-color: rgba(179, 169, 169, 0.233);
-      border: 2px solid #999;
+      background-color: rgba(255, 255, 255, 0.2);
+      border: 2px solid #ccc;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 10px;
+      border-radius: 8px;
       color: black;
     }
 
@@ -64,28 +65,59 @@
     .yellow { color: orange; }
 
     #message {
-      margin-top: 20px;
-      font-size: 24px;
-      text-shadow: 1px 1px 4px black;
+      margin-top: 15px;
+      font-size: 18px;
+      text-shadow: 1px 1px 3px black;
     }
 
     #player-info {
-      font-size: 18px;
+      font-size: 16px;
       margin-top: 10px;
     }
 
     #setup {
       margin-top: 20px;
     }
+
+    @media (min-width: 600px) {
+      .cell { font-size: 32px; }
+      h1 { font-size: 40px; }
+    }
+
+    #starCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at bottom, #0d1a26 0%, #000 100%);
+    }
+
+    #toggleEffects {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      background: rgba(0,0,0,0.5);
+    }
   </style>
 </head>
 <body>
+  <canvas id="starCanvas"></canvas>
 
+  <button id="toggleEffects">Disable Effects ✨</button>
+
+  <h1>Vithean</h1>
   <h1>Tic Tac Toe Game</h1>
 
   <div id="setup">
     <input type="text" id="player1" placeholder="Enter Player 1 Name (X)" />
-    <input type="text" id="player2" placeholder="Enter Player 2 Name (O)" />
+    <input type="text" id="player2" placeholder="Enter Player 2 Name (O or AI)" />
+    <select id="mode">
+      <option value="human">2 Players</option>
+      <option value="ai">Play vs AI</option>
+    </select>
     <br>
     <button onclick="startGame()">Start Game</button>
   </div>
@@ -103,29 +135,31 @@
   </div>
 
   <script>
-    let board = ["", "", "", "", "", "", "", "", ""];
-    let currentPlayer = "X";
-    let gameActive = true;
-    let player1Name = "";
-    let player2Name = "";
+    // Game Logic
+    const ROWS = 5, COLS = 5, WIN_LENGTH = 3;
+    let board = new Array(ROWS * COLS).fill(""), currentPlayer = "X", gameActive = true;
+    let player1Name = "", player2Name = "", aiEnabled = false;
 
     const boardElement = document.getElementById('board');
     const messageElement = document.getElementById('message');
     const player1Input = document.getElementById('player1');
     const player2Input = document.getElementById('player2');
+    const modeSelect = document.getElementById('mode');
     const p1 = document.getElementById('p1');
     const p2 = document.getElementById('p2');
 
     function startGame() {
+      board = new Array(ROWS * COLS).fill("");
+      currentPlayer = "X";
+      gameActive = true;
       player1Name = player1Input.value.trim() || "Player 1";
       player2Name = player2Input.value.trim() || "Player 2";
-
+      aiEnabled = modeSelect.value === "ai";
+      if (aiEnabled) player2Name += " (AI)";
       p1.textContent = `${player1Name}: X`;
       p2.textContent = `${player2Name}: O`;
-
       document.getElementById('setup').style.display = 'none';
       document.getElementById('game').style.display = 'block';
-
       drawBoard();
     }
 
@@ -136,10 +170,8 @@
         cellElement.classList.add("cell");
         cellElement.dataset.index = index;
         cellElement.innerHTML = cell;
-
         if (cell === "X") cellElement.classList.add("blue");
         else if (cell === "O") cellElement.classList.add("yellow");
-
         cellElement.addEventListener("click", handleClick);
         boardElement.appendChild(cellElement);
       });
@@ -148,40 +180,177 @@
     function handleClick(e) {
       const index = e.target.dataset.index;
       if (!gameActive || board[index] !== "") return;
-
       board[index] = currentPlayer;
       drawBoard();
-
       if (checkWinner()) {
         const winnerName = currentPlayer === "X" ? player1Name : player2Name;
         messageElement.innerHTML = `<span class="${currentPlayer === 'X' ? 'blue' : 'yellow'}">${winnerName} wins! 🎉</span>`;
         gameActive = false;
       } else if (board.every(cell => cell !== "")) {
-        messageElement.textContent = "It's a draw! 🤝"; 
+        messageElement.textContent = "It's a draw! 🤝";
         gameActive = false;
       } else {
         currentPlayer = currentPlayer === "X" ? "O" : "X";
+        if (aiEnabled && currentPlayer === "O") setTimeout(aiMove, 300);
       }
     }
 
+    function aiMove() {
+      if (!gameActive) return;
+      const emptyIndices = board.map((v, i) => v === "" ? i : null).filter(i => i !== null);
+      for (let i of emptyIndices) {
+        board[i] = "O";
+        if (checkWinner()) {
+          drawBoard();
+          messageElement.innerHTML = `<span class="yellow">${player2Name} wins! 🤖</span>`;
+          gameActive = false; return;
+        }
+        board[i] = "";
+      }
+      for (let i of emptyIndices) {
+        board[i] = "X";
+        if (checkWinner()) {
+          board[i] = "O";
+          drawBoard();
+          currentPlayer = "X"; return;
+        }
+        board[i] = "";
+      }
+      const center = Math.floor(board.length / 2);
+      if (board[center] === "") {
+        board[center] = "O"; drawBoard(); currentPlayer = "X"; return;
+      }
+      const corners = [0, 4, 20, 24].filter(i => board[i] === "");
+      if (corners.length > 0) {
+        const choice = corners[Math.floor(Math.random() * corners.length)];
+        board[choice] = "O"; drawBoard(); currentPlayer = "X"; return;
+      }
+      const choice = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+      board[choice] = "O"; drawBoard(); currentPlayer = "X";
+    }
+
     function checkWinner() {
-      const winCombos = [
-        [0,1,2],[3,4,5],[6,7,8],
-        [0,3,6],[1,4,7],[2,5,8],
-        [0,4,8],[2,4,6]
-      ];
-      return winCombos.some(combo => {
-        return combo.every(index => board[index] === currentPlayer);
-      });
+      const getIndex = (r, c) => r * COLS + c;
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (c <= COLS - WIN_LENGTH &&
+              board[getIndex(r, c)] === currentPlayer &&
+              board[getIndex(r, c + 1)] === currentPlayer &&
+              board[getIndex(r, c + 2)] === currentPlayer) return true;
+          if (r <= ROWS - WIN_LENGTH &&
+              board[getIndex(r, c)] === currentPlayer &&
+              board[getIndex(r + 1, c)] === currentPlayer &&
+              board[getIndex(r + 2, c)] === currentPlayer) return true;
+          if (r <= ROWS - WIN_LENGTH && c <= COLS - WIN_LENGTH &&
+              board[getIndex(r, c)] === currentPlayer &&
+              board[getIndex(r + 1, c + 1)] === currentPlayer &&
+              board[getIndex(r + 2, c + 2)] === currentPlayer) return true;
+          if (r <= ROWS - WIN_LENGTH && c >= WIN_LENGTH - 1 &&
+              board[getIndex(r, c)] === currentPlayer &&
+              board[getIndex(r + 1, c - 1)] === currentPlayer &&
+              board[getIndex(r + 2, c - 2)] === currentPlayer) return true;
+        }
+      }
+      return false;
     }
 
     function resetGame() {
-      board = ["", "", "", "", "", "", "", "", ""];
-      currentPlayer = "X";
-      gameActive = true;
+      document.getElementById('setup').style.display = 'block';
+      document.getElementById('game').style.display = 'none';
+      player1Input.value = "";
+      player2Input.value = "";
       messageElement.textContent = "";
-      drawBoard();
     }
+
+    // --- Animated Stars with Parallax ---
+    const canvas = document.getElementById('starCanvas');
+    const ctx = canvas.getContext('2d');
+    let stars = [], mouseX = 0, mouseY = 0, effectsOn = true;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createStars(count) {
+      stars = [];
+      for (let i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.5 + 0.5,
+          opacity: Math.random()
+        });
+      }
+    }
+    createStars(200);
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let star of stars) {
+        let offsetX = mouseX * star.r * 2;
+        let offsetY = mouseY * star.r * 2;
+        ctx.beginPath();
+        ctx.arc(star.x + offsetX, star.y + offsetY, star.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${star.opacity})`;
+        ctx.fill();
+        star.opacity += (Math.random() - 0.5) * 0.05;
+        star.opacity = Math.max(0.2, Math.min(1, star.opacity));
+      }
+    }
+
+    function drawShootingStar() {
+      if (!effectsOn || Math.random() > 0.02) return;
+      let sx = Math.random() * canvas.width;
+      let sy = Math.random() * canvas.height / 2;
+      let ex = sx + Math.random() * 100 + 50;
+      let ey = sy + Math.random() * 20 - 10;
+      let alpha = 1.0;
+      const shoot = () => {
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(ex, ey);
+        ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        alpha -= 0.02;
+        sx += 5;
+        sy += 1;
+        if (alpha > 0 && effectsOn) requestAnimationFrame(shoot);
+      };
+      shoot();
+    }
+
+    function animateStars() {
+      if (effectsOn) {
+        drawStars();
+        drawShootingStar();
+      } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      requestAnimationFrame(animateStars);
+    }
+    animateStars();
+
+    document.addEventListener('mousemove', e => {
+      mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+      mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    });
+
+    document.addEventListener('touchmove', e => {
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        mouseX = (touch.clientX / window.innerWidth - 0.5) * 2;
+        mouseY = (touch.clientY / window.innerHeight - 0.5) * 2;
+      }
+    });
+
+    document.getElementById('toggleEffects').addEventListener('click', () => {
+      effectsOn = !effectsOn;
+      document.getElementById('toggleEffects').textContent = effectsOn ? "Disable Effects ✨" : "Enable Effects 🌌";
+    });
   </script>
 </body>
 </html>
